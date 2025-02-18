@@ -1,0 +1,36 @@
+{
+  "name": "streamify-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon --watch ./src -e ts --exec tsx src/index.ts",
+    "build": "tsc",
+    "start": "npm run build && node ./dist/index.js"
+  },
+  "keywords": [],
+  "author": "nly36524",
+  "license": "ISC",
+  "dependencies": {
+    "@graphql-tools/load-files": "^7.0.1",
+    "apollo-server-express": "^3.13.0",
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "graphql": "^16.10.0",
+    "graphql-tag": "^2.12.6",
+    "jsonwebtoken": "^9.0.2",
+    "lodash.merge": "^4.6.2",
+    "log4js": "^6.9.1",
+    "mongoose": "^8.10.0",
+    "serve-favicon": "^2.5.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/node": "^22.13.1",
+    "nodemon": "^3.1.9",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}
