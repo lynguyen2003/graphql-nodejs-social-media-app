@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 import { randomUUID } from 'crypto';
+import { isOutputType } from 'graphql';
 
 const Schema = mongoose.Schema;
 
@@ -31,6 +32,12 @@ const UsersSchema = new Schema({
 		type: String,
 		required: false,
 	},
+	phone:{
+		type: String,
+		required: false,
+		unique: true,
+		sparse: true
+	},
 	bio: {
 		type: String,
 		required: false,
@@ -56,6 +63,10 @@ const UsersSchema = new Schema({
 		required: true,
 		default: false
 	},
+	otpSecret: {
+		type: String,
+		required: false
+	  }, 
 	registrationDate: {
 		type: Date,
 		required: true,

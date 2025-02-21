@@ -7,10 +7,12 @@ export default /* GraphQL */ gql`
 		email: String
 		password: String
 		username: String
+		phone:String
 		bio: String
 		imageUrl: String
 		isAdmin: Boolean
 		isActive: Boolean
+		otpSecret: String
 		registrationDate: String
 		lastLogin: String
 	}
@@ -19,8 +21,11 @@ export default /* GraphQL */ gql`
 		_id: String
 		email: String
 		username: String
+		phone:String
 		bio: String
 		imageUrl: String
+		isAdmin: Boolean
+		isActive: Boolean
 	}
 
 	type Query {
@@ -29,5 +34,6 @@ export default /* GraphQL */ gql`
 	}
 	type Mutation {
 		updateUser(input: UpdateUserInput!): User!
+		addPhoneNumber(phone: String!): User!
 	}
 `;

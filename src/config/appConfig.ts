@@ -14,7 +14,15 @@ export const environmentVariablesConfig = Object.freeze({
 	mongoUser: process.env.MONGO_USER || '',
 	mongoPass: process.env.MONGO_PASS || '',
 	environment: (process.env.ENVIRONMENT === ENVIRONMENT.DEVELOPMENT) ? ENVIRONMENT.DEVELOPMENT : ENVIRONMENT.PRODUCTION,
-	port: Number(process.env.PORT) || serverPortByDefault
+	port: Number(process.env.PORT) || serverPortByDefault,
+	emailHost: process.env.EMAIL_HOST || 'localhost',
+	emailPort: process.env.EMAIL_PORT,
+	emailUser: process.env.EMAIL_USER || '',
+	emailPassword: process.env.EMAIL_TOKEN || '',
+	emailFrom: 'hello@demomailtrap.com',
+	twilioAccountSid: process.env.TWILIO_ACCOUNT_SID || '',
+	twilioAuthToken: process.env.TWILIO_AUTH_TOKEN || '',
+	twilioPhoneNumber: process.env.TWILIO_PHONE_NUMBER || ''
 });
 
 

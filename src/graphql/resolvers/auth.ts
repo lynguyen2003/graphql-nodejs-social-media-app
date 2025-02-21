@@ -2,14 +2,14 @@ import { UserInputError } from 'apollo-server-express';
 import bcrypt from 'bcrypt';
 
 import { isValidEmail, isStrongPassword } from '../../helpers/validations.js';
+import { sendOTPEmail } from '../../services/email/emailService.js';
+import { otpHelper } from '../../helpers/otpHelper.js';
+import { sendOTPViaSMS } from '../../services/sms/twilioService.js';
 
 interface AuthPayload {
 	token: string;
 }
 
-/**
- * All resolvers related to auth
- */
 const authResolvers = {
 	Query: {},
 	Mutation: {
@@ -31,9 +31,14 @@ const authResolvers = {
 				throw new UserInputError('Data provided is not valid');
 			}
 
-			await new context.di.model.Users({ email, password }).save?.();
+			const otpSecret = otpHelper.generateSecret();
+			const otpCode = otpHelper.generateToken(otpSecret);
+
+			await new context.di.model.Users({ email, password, otpSecret }).save?.();
 			const user = await context.di.model.Users.findOne({ email }).lean();
 
+			await sendOTPEmail(user.email, otpCode)		
+			
 			return {
 				token: context.di.jwt.createAuthToken(user.email, user.isAdmin, user.isActive, user.uuid),
 			};
@@ -66,7 +71,61 @@ const authResolvers = {
 				token: context.di.jwt.createAuthToken(user.email, user.isAdmin, user.isActive, user.uuid),
 			};
 		},
-		
+
+		sendOTPToEmail: async (parent, { email }, context) => {
+			const user = await context.di.model.Users.findOne({ email }).lean();
+			if (!user) {
+				throw new UserInputError('User not found');
+			}
+			const otpCode = otpHelper.generateToken(user.otpSecret);
+			try {
+				await sendOTPEmail(user.email, otpCode)
+			} catch (error) {
+				throw new Error(`Failed to send OTP: ${error.message}`);
+			} 
+			return 'OTP sent successfully';
+		},
+
+		sendOTPToSMS: async (parent, { phone }, context) => {
+			if (!phone || !/^\+[1-9]\d{1,14}$/.test(phone)) {
+				throw new UserInputError('Invalid phone number.');
+			}
+			const user = await context.di.model.Users.findOne({ phone }).lean();
+			if (!user) {
+				throw new UserInputError('User not found');
+			}
+			const otp = otpHelper.generateToken(user.otpSecret);
+			try {
+				await sendOTPViaSMS(phone, otp);
+				return 'OTP sent successfully';
+			} catch (error) {
+				throw new Error(`Failed to send OTP: ${error.message}`);
+			}
+		},
+
+		verifyOTP: async (parent, { email, token }, context) => {
+			const user = await context.di.model.Users.findOne({ email }).lean();
+			if (!user) {
+			  throw new UserInputError('User not found');
+			}
+			
+			const isValid = otpHelper.verifyToken(token, user.otpSecret);
+			console.log(token)
+			if (!isValid) {
+			  throw new UserInputError('Invalid OTP');
+			}
+
+
+			await context.di.model.Users.updateOne(
+				{ id: user.uuid },
+				{ isActive: true }
+			  );
+	  
+			return {
+			  token: context.di.jwt.createAuthToken(user.email, user.isAdmin, true, user.uuid)
+			};
+		},
+
 		deleteMyUserAccount: async (parent, args, context) => {
 			context.di.authValidation.ensureThatUserIsLogged(context);
 

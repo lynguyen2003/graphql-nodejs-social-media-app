@@ -1,4 +1,7 @@
 import { UserInputError } from "apollo-server-express";
+import { otpHelper } from "../../helpers/otpHelper";
+import { formatPhoneNumber } from "../../helpers/validations";
+import { sendOTPViaSMS } from "../../services/sms/stringeeService";
 
 /**
  * All resolvers related to users
@@ -25,6 +28,32 @@ export default {
 		}
 	},
 	Mutation: {
+		addPhoneNumber: async (parent, { phone }, context) => {
+			context.di.authValidation.ensureThatUserIsLogged(context);
+			const user = await context.di.authValidation.getUser(context);
+	  
+			const formattedPhone = formatPhoneNumber(phone);
+			if (!formattedPhone) {
+			  throw new UserInputError('Invalid phone number format. Please use format: +84912345678');
+			}
+	  
+			const existingUser = await context.di.model.Users.findOne({ phone: formattedPhone });
+			if (existingUser) {
+			  throw new UserInputError('Phone number is already in use');
+			}
+	  
+			await context.di.model.Users.updateOne(
+			  { uuid: user.uuid },
+			  { 
+				phone: formattedPhone,
+				isPhoneVerified: false 
+			  }
+			);
+	  
+			const otp = otpHelper.generateToken(user.otpSecret);
+			await sendOTPViaSMS(phone, otp);
+			return true;
+		},
 		updateUser: async (parent, { input } : {input: UpdateUserInput} , context) => {
 			context.di.authValidation.ensureThatUserIsLogged(context);
 

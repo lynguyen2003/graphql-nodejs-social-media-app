@@ -5,14 +5,17 @@ export default /* GraphQL */ gql`
 		token: String
 	}
 
+	type TOTPSetup {
+		secret: String!
+		qrCodeUrl: String!
+	}
+
 	type Mutation {
-		""" It allows users to register """
 		registerUser(email: String!, password: String!): Token
-
-		""" It allows users to authenticate """
 		authUser(email: String!, password: String!): Token
-
-		""" It allows to user to delete their account permanently """
 		deleteMyUserAccount: DeleteResult
+		verifyOTP(email: String!, token: String!): Token!
+		sendOTPToEmail(email: String!): String
+		sendOTPToSMS(phone: String!): String
 	}
 `;
