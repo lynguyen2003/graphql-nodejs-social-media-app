@@ -3,12 +3,12 @@ import { gql } from 'apollo-server-express';
 export default /* GraphQL */ gql`
 	type User {
 		_id: String
-		uuid: String
 		email: String
 		password: String
 		username: String
 		phone:String
 		bio: String
+		posts: [Post]
 		imageUrl: String
 		isAdmin: Boolean
 		isActive: Boolean
@@ -18,7 +18,6 @@ export default /* GraphQL */ gql`
 	}
 
 	input UpdateUserInput {
-		_id: String
 		email: String
 		username: String
 		phone:String
@@ -29,8 +28,8 @@ export default /* GraphQL */ gql`
 	}
 
 	type Query {
-		""" Get list of all users registered on database """
-		listAllUsers: [User]
+		users: [User]
+		user(id: String!): User
 	}
 	type Mutation {
 		updateUser(input: UpdateUserInput!): User!

@@ -40,7 +40,7 @@ const authResolvers = {
 			await sendOTPEmail(user.email, otpCode)		
 			
 			return {
-				token: context.di.jwt.createAuthToken(user.email, user.isAdmin, user.isActive, user.uuid),
+				token: context.di.jwt.createAuthToken(user.email, user.isAdmin, user.isActive, user._id),
 			};
 		},
 
@@ -68,7 +68,7 @@ const authResolvers = {
 			).lean();
 
 			return {
-				token: context.di.jwt.createAuthToken(user.email, user.isAdmin, user.isActive, user.uuid),
+				token: context.di.jwt.createAuthToken(user.email, user.isAdmin, user.isActive, user._id),
 			};
 		},
 
@@ -117,12 +117,12 @@ const authResolvers = {
 
 
 			await context.di.model.Users.updateOne(
-				{ id: user.uuid },
+				{ id: user._id },
 				{ isActive: true }
 			  );
 	  
 			return {
-			  token: context.di.jwt.createAuthToken(user.email, user.isAdmin, true, user.uuid)
+			  token: context.di.jwt.createAuthToken(user.email, user.isAdmin, true, user._id)
 			};
 		},
 
@@ -130,8 +130,12 @@ const authResolvers = {
 			context.di.authValidation.ensureThatUserIsLogged(context);
 
 			const user = await context.di.authValidation.getUser(context);
+
+			if (user.posts && user.posts.length > 0) {
+				await context.di.model.Posts.deleteMany({ _id: { $in: user.posts } });
+			}
 			
-			return context.di.model.Users.deleteOne({ uuid: user.uuid });
+			return context.di.model.Users.deleteOne({ _id: user._id });
 		},
 	},
 };

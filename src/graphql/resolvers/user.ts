@@ -9,7 +9,6 @@ import { sendOTPViaSMS } from "../../services/sms/stringeeService";
  */
 
 type UpdateUserInput = {
-	_id: String
 	email: String
 	username: String
 	bio: String
@@ -18,13 +17,14 @@ type UpdateUserInput = {
 
 export default {
 	Query: {
-		listAllUsers:  async (parent, args, context) => {
+		users:  async (parent, args, context) => {
 			context.di.authValidation.ensureThatUserIsLogged(context);
 
 			context.di.authValidation.ensureThatUserIsAdministrator(context);
 
 			const sortCriteria = { isAdmin: 'desc', registrationDate: 'asc' };
-			return context.di.model.Users.find().sort(sortCriteria).lean();
+			const users = context.di.model.Users.find().sort(sortCriteria).populate('posts').lean();
+			return users
 		}
 	},
 	Mutation: {
@@ -43,7 +43,7 @@ export default {
 			}
 	  
 			await context.di.model.Users.updateOne(
-			  { uuid: user.uuid },
+			  { id: user._id },
 			  { 
 				phone: formattedPhone,
 				isPhoneVerified: false 
@@ -54,19 +54,16 @@ export default {
 			await sendOTPViaSMS(phone, otp);
 			return true;
 		},
-		updateUser: async (parent, { input } : {input: UpdateUserInput} , context) => {
+		updateUser: async (parent, { input } : { input: UpdateUserInput } , context) => {
 			context.di.authValidation.ensureThatUserIsLogged(context);
 
-			if (!input) throw new UserInputError('Data provided is not valid');
-			if (!input._id) throw new UserInputError('User ID is required');
+			const user = await context.di.authValidation.getUser(context);
 
-			const updateData = Object.entries(input)
-				.filter(([key, value]) => value != null && key !== '_id')
-				.reduce((obj, [key, value]) => ({ ...obj, [key]: value }), {});
+			if (!input) throw new UserInputError('Data provided is not valid');
 
 			const userObj = await context.di.model.Users.findByIdAndUpdate(
-				input._id,
-				{ $set: updateData },
+				user._id,
+				{ $set: input },
 				{ new: true }
 			).lean();
 

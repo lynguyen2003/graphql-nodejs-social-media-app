@@ -12,6 +12,12 @@ export const authValidations = {
 		}
 	},
 
+	ensureThatUserIsActived: (context) => {
+		if (!context.user || !context.user.isActive) {
+			throw new AuthenticationError('You must be active to perform this action');
+		}
+	},
+	
 	ensureThatUserIsAdministrator: (context) => {
 		if (!context.user || !context.user.isAdmin) {
 			throw new ForbiddenError('You must be an administrator to perform this action');
@@ -23,10 +29,10 @@ export const authValidations = {
 			return null;
 		}
 	
-		const userUUID = context.user.uuid || null;
-		const user = await models.Users.findOne({ uuid: userUUID }).lean();
+		const id = context.user._id;
+		const user = await models.Users.findOne({ _id: id }).lean();
 		if (!user) {
-			throw new AuthenticationError('You must be logged in to perform this action');
+			throw new AuthenticationError('You must be logged in to perform this action...');
 		}
 
 		return user;
