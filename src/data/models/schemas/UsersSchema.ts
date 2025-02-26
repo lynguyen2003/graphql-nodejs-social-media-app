@@ -39,6 +39,10 @@ const UsersSchema = new Schema({
 		type: Schema.Types.ObjectId,
         ref:'posts',
 	}],
+	friendsCount: {
+		type: Number,
+		default: 0
+	},
 	imageUrl: {
 		type: String,
 		required: true,
@@ -70,9 +74,6 @@ const UsersSchema = new Schema({
 	}
 });
 
-/**
- * Hash the password of user before save on database
- */
 UsersSchema.pre('save', function (next) {
     const fieldsToHash = ['password', 'otpSecret'];
     const modifiedFields = fieldsToHash.filter(field => this.isModified(field));

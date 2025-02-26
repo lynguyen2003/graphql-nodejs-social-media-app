@@ -4,7 +4,6 @@ import { fileURLToPath, pathToFileURL } from 'url';
 import { loadFiles } from '@graphql-tools/load-files';
 import { mergeTypeDefs } from '@graphql-tools/merge';
 
-// Convert the module URL to a file path and get the directory name
 const __dirname: string = path.dirname(fileURLToPath(import.meta.url));
 
 /**

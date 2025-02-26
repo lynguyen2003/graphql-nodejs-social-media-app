@@ -49,8 +49,6 @@ const authResolvers = {
 				throw new UserInputError('Invalid credentials');
 			}
 
-			console.log(email)
-
 			const user = await context.di.model.Users.findOne({ email }).lean();
 			if (!user) {
 				throw new UserInputError('User not found or login not allowed');
