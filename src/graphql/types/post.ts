@@ -10,6 +10,7 @@ export default /* GraphQL */ gql`
         mediaUrls: [String]
         likes: [User]
         saved: [User]
+        viewCount: Int
 	}
 
     input AddPostInput {

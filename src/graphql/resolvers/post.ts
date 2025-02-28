@@ -1,5 +1,5 @@
 import { UserInputError } from "apollo-server-express"
-
+import { getViewCount, incrementView } from "../../config/redisDb"
 type PostInput = {
 	id: String
 	caption: String
@@ -20,12 +20,16 @@ export default {
 		},
         post: async (parent, { id } , context) => {
 			context.di.authValidation.ensureThatUserIsLogged(context);
-			if (!id) {
-				throw new UserInputError('ID is required');
+
+			const post = await context.di.model.Posts.findById(id);
+			if (!post) {
+				throw new UserInputError('Post not found');
 			}
-			return await context.di.model.Posts.findById(id)
-				.populate('author')
-				.lean();
+			await incrementView(id);
+			const result = await context.di.model.Posts.findById(id).populate('author').lean();
+			result.viewCount = await getViewCount(id);
+
+			return result;
 		}
 	},
 	Mutation: {
@@ -108,16 +112,16 @@ export default {
 			}
 
 			const userIdStr = user._id.toString();
-			const userSavedIndex = post.savedBy.findIndex(id => id.toString() === userIdStr);
+			const userSavedIndex = post.saves.findIndex(id => id.toString() === userIdStr);
 
 			if (userSavedIndex === -1) {
-				post.savedBy.push(user._id);
+				post.saves.push(user._id);
 			} else {
-				post.savedBy.splice(userSavedIndex, 1);
+				post.saves.splice(userSavedIndex, 1);
 			}
 
 			await post.save();
-			return post.populate('author savedBy');
+			return post.populate('author saves');
 		}
 
 	}

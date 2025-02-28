@@ -29,7 +29,7 @@ export default {
       context.di.authValidation.ensureThatUserIsLogged(context);
       const user = await context.di.authValidation.getUser(context);
       
-      const friendships = await context.di.model.Friend.find({
+      const friendships = await context.di.model.Friends.find({
         $or: [
           { requester: user._id, status: 'accepted' },
           { recipient: user._id, status: 'accepted' }

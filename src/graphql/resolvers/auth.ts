@@ -115,7 +115,7 @@ const authResolvers = {
 
 
 			await context.di.model.Users.updateOne(
-				{ id: user._id },
+				{ _id: user._id },
 				{ isActive: true }
 			  );
 	  

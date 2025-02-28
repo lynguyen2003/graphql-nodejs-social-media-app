@@ -26,6 +26,10 @@ const PostsSchema = new Schema({
         type: String,
         required: true
     }],
+    viewCount: {
+        type: Number,
+        default: 0
+    },
     likes: [{
         type: Schema.Types.ObjectId,
         ref: 'users'
