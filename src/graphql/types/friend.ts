@@ -23,6 +23,10 @@ export default /* GraphQL */ gql`
         mutualFriendsList: [User]
     }
 
+    extend type User {
+        friendsCount: Int
+    }
+
     type Query {
         friends: [User]
         friendRequests: [Friend]

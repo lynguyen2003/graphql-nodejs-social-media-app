@@ -39,10 +39,6 @@ const UsersSchema = new Schema({
 		type: Schema.Types.ObjectId,
         ref:'posts',
 	}],
-	friendsCount: {
-		type: Number,
-		default: 0
-	},
 	imageUrl: {
 		type: String,
 		required: true,

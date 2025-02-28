@@ -10,7 +10,6 @@ export default /* GraphQL */ gql`
         mediaUrls: [String]
         likes: [User]
         saved: [User]
-        isArchived: Boolean
 	}
 
     input AddPostInput {
@@ -18,7 +17,6 @@ export default /* GraphQL */ gql`
         tags: [String]
         location: String
         mediaUrls: [String]!
-        isArchived: Boolean
     }
 
 	input EditPostInput {

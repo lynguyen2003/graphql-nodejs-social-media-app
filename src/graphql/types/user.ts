@@ -9,7 +9,6 @@ export default /* GraphQL */ gql`
 		phone:String
 		bio: String
 		posts: [Post]
-		friendsCount: Int
 		imageUrl: String
 		isAdmin: Boolean
 		isActive: Boolean

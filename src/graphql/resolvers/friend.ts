@@ -200,14 +200,6 @@ export default {
 
       friendship.status = 'accepted';
       await friendship.save();
-      await context.di.model.Users.updateOne(
-        { _id: friendship.requester },
-        { $inc: { friendsCount: 1 } }
-      );
-      await context.di.model.Users.updateOne(
-        { _id: friendship.recipient },
-        { $inc: { friendsCount: 1 } }
-      );
       return friendship.populate('requester recipient');
     },
     rejectFriendRequest: async (parent, { requestId }, context) => {
@@ -242,18 +234,7 @@ export default {
         ]
       });
 
-      if (result.deletedCount > 0) {
-        await context.di.model.Users.updateOne(
-          { _id: user._id },
-          { $inc: { friendsCount: -1 } }
-        );
-        await context.di.model.Users.updateOne(
-          { _id: userId },
-          { $inc: { friendsCount: -1 } }
-        );
-      }
-
-      return result.deletedCount > 0;
+      return result;
     },
     blockUser: async (parent, { userId }, context) => {
       context.di.authValidation.ensureThatUserIsLogged(context);
@@ -301,6 +282,14 @@ export default {
       });
 
       return result.deletedCount > 0;
+    }
+  },
+
+  User: {
+    friendsCount: async (user, args, context) => {
+      return context.di.model.Friends.countDocuments({
+        $or: [{ requester: user._id }, { recipient: user._id }]
+      });
     }
   }
 };

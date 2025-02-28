@@ -37,7 +37,7 @@ const authResolvers = {
 			await new context.di.model.Users({ email, password, otpSecret }).save?.();
 			const user = await context.di.model.Users.findOne({ email }).lean();
 
-			await sendOTPEmail(user.email, otpCode)		
+			// await sendOTPEmail(user.email, otpCode)		
 			
 			return {
 				token: context.di.jwt.createAuthToken(user.email, user.isAdmin, user.isActive, user._id),

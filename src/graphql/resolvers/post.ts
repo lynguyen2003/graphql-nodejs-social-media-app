@@ -6,7 +6,6 @@ type PostInput = {
 	tags: String[]
 	location: String
 	mediaUrls: String[]
-	isArchived: Boolean
 }
 
 export default {
@@ -42,12 +41,8 @@ export default {
 			}
 
 			const post = await new context.di.model.Posts({
-				author: user._id,
-				caption: input.caption,
-				tags: input.tags,
-				location: input.location,
-				mediaUrls: input.mediaUrls,
-				isArchived: input.isArchived,
+				...input,
+				author: user._id
 			}).save();
 
 			await context.di.model.Users.findByIdAndUpdate(
