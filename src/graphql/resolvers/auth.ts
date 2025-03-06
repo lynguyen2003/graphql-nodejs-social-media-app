@@ -44,30 +44,64 @@ const authResolvers = {
 			};
 		},
 
-		authUser: async ( parent, { email, password }, context ): Promise<AuthPayload> => {
+		authUser: async (parent, { email, password }, context) => {
 			if (!email || !password) {
 				throw new UserInputError('Invalid credentials');
 			}
-
+	
 			const user = await context.di.model.Users.findOne({ email }).lean();
 			if (!user) {
 				throw new UserInputError('User not found or login not allowed');
 			}
-
+	
 			const isCorrectPassword = await bcrypt.compare(password, user.password);
 			if (!isCorrectPassword) {
 				throw new UserInputError('Invalid credentials');
 			}
-
+	
 			await context.di.model.Users.findOneAndUpdate(
 				{ email },
 				{ lastLogin: new Date().toISOString() },
 				{ new: true }
 			).lean();
-
+	
+			const accessToken = context.di.jwt.createAuthToken(
+				user.email, 
+				user.isAdmin, 
+				user.isActive, 
+				user._id
+			);
+			
+			const refreshToken = await context.di.jwt.createRefreshToken(user._id);
+	
 			return {
-				token: context.di.jwt.createAuthToken(user.email, user.isAdmin, user.isActive, user._id),
+				accessToken,
+				refreshToken
 			};
+		},
+
+		refreshToken: async (parent, { refreshToken }, context) => {
+			try {
+				const user = await context.di.jwt.validateRefreshToken(refreshToken);
+				
+				const newAccessToken = context.di.jwt.createAuthToken(
+					user.email, 
+					user.isAdmin, 
+					user.isActive, 
+					user._id
+				);
+				
+				const newRefreshToken = await context.di.jwt.createRefreshToken(user._id);
+				
+				await context.di.jwt.revokeRefreshToken(refreshToken);
+				
+				return {
+					accessToken: newAccessToken,
+					refreshToken: newRefreshToken
+				};
+			} catch (error) {
+				throw new UserInputError('Invalid refresh token');
+			}
 		},
 
 		sendOTPToEmail: async (parent, { email }, context) => {
@@ -122,6 +156,10 @@ const authResolvers = {
 			return {
 			  token: context.di.jwt.createAuthToken(user.email, user.isAdmin, true, user._id)
 			};
+		},
+
+		logout: async (parent, { refreshToken }, context) => {
+			await context.di.jwt.revokeRefreshToken(refreshToken);
 		},
 
 		deleteMyUserAccount: async (parent, args, context) => {

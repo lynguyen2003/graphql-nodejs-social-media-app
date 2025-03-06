@@ -15,21 +15,32 @@ export const authMiddleware = async (req, res, next) => {
             return res.status(401).json({ error: 'Unauthorized' });
         }
         
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        
-        if (!decoded || !decoded.userId) {
-            return res.status(401).json({ error: 'Invalid token' });
+        try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            
+            if (!decoded || !decoded.userId) {
+                return res.status(401).json({ error: 'Invalid token' });
+            }
+            
+            const user = await models.Users.findById(decoded.userId).lean();
+            
+            if (!user) {
+                return res.status(401).json({ error: 'User not found' });
+            }
+            
+            req.user = user;
+            next();
+        } catch (error) {
+            if (error.name === 'TokenExpiredError') {
+                return res.status(401).json({ 
+                    error: 'Token expired',
+                    code: 'TOKEN_EXPIRED'
+                });
+            }
+            
+            return res.status(401).json({ error: 'Authentication failed' });
         }
-        
-        const user = await models.Users.findById(decoded.userId).lean();
-        
-        if (!user) {
-            return res.status(401).json({ error: 'User not found' });
-        }
-        
-        req.user = user;
-        next();
     } catch (error) {
         return res.status(401).json({ error: 'Authentication failed' });
     }
-}; 
+};

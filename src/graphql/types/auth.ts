@@ -1,21 +1,28 @@
 import { gql } from 'apollo-server-express';
 
 export default /* GraphQL */ gql`
-	type Token {
-		token: String
-	}
+    type AuthTokens {
+        accessToken: String!
+        refreshToken: String!
+    }
 
-	type TOTPSetup {
-		secret: String!
-		qrCodeUrl: String!
-	}
+    type Token {
+        token: String
+    }
 
-	type Mutation {
-		registerUser(email: String!, password: String!): Token
-		authUser(email: String!, password: String!): Token
-		deleteMyUserAccount: DeleteResult
-		verifyOTP(email: String!, token: String!): Token!
-		sendOTPToEmail(email: String!): String
-		sendOTPToSMS(phone: String!): String
-	}
+    type TOTPSetup {
+        secret: String!
+        qrCodeUrl: String!
+    }
+
+    type Mutation {
+        registerUser(email: String!, password: String!): AuthTokens
+        authUser(email: String!, password: String!): AuthTokens
+        refreshToken(refreshToken: String!): AuthTokens
+        logout(refreshToken: String!): Boolean
+        deleteMyUserAccount: DeleteResult
+        verifyOTP(email: String!, token: String!): Token!
+        sendOTPToEmail(email: String!): String
+        sendOTPToSMS(phone: String!): String
+    }
 `;
