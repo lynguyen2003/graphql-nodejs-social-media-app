@@ -12,6 +12,7 @@ export default /* GraphQL */ gql`
 		imageUrl: String
 		isAdmin: Boolean
 		isActive: Boolean
+		isPhoneVerified: Boolean
 		otpSecret: String
 		registrationDate: String
 		lastLogin: String

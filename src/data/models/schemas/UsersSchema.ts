@@ -54,6 +54,11 @@ const UsersSchema = new Schema({
 		required: true,
 		default: false
 	},
+	isPhoneVerified: {
+		type: Boolean,
+		required: true,
+		default: false
+	},
 	otpSecret: {
 		type: String,
 		required: false

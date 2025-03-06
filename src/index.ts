@@ -44,7 +44,7 @@ const startServer = async () => {
 
 	await connectRedis();
 	setupViewCountSync();
-	setupMediaCleanup();
+	//setupMediaCleanup();
 	
 	server.applyMiddleware({ app });
 

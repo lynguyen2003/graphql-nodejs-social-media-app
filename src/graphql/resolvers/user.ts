@@ -1,7 +1,7 @@
 import { UserInputError } from "apollo-server-express";
 import { otpHelper } from "../../helpers/otpHelper";
 import { formatPhoneNumber } from "../../helpers/validations";
-import { sendOTPViaSMS } from "../../services/sms/stringeeService";
+import { sendOTPViaSMS } from "../../services/sms/twilioService";
 
 /**
  * All resolvers related to users
@@ -36,19 +36,17 @@ export default {
 			if (!formattedPhone) {
 			  throw new UserInputError('Invalid phone number format. Please use format: +84912345678');
 			}
-	  
-			const existingUser = await context.di.model.Users.findOne({ phone: formattedPhone });
-			if (existingUser) {
-			  throw new UserInputError('Phone number is already in use');
+
+			const isPhoneExist = await context.di.model.Users.findOne({ phone: formattedPhone }).lean();
+			if (isPhoneExist) {
+				throw new UserInputError('Phone number is already in use');
 			}
-	  
-			await context.di.model.Users.updateOne(
-			  { id: user._id },
-			  { 
-				phone: formattedPhone,
-				isPhoneVerified: false 
-			  }
-			);
+
+			const userObj = await context.di.model.Users.findByIdAndUpdate(
+				user._id,
+				{ $set: { phone: formattedPhone, isPhoneVerified: true } },
+				{ new: true }
+			).lean();
 	  
 			const otp = otpHelper.generateToken(user.otpSecret);
 			await sendOTPViaSMS(phone, otp);

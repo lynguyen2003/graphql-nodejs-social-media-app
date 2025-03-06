@@ -26,9 +26,9 @@ const authResolvers = {
 				throw new UserInputError('The password is not secure enough');
 			}
 
-			const isAnEmailAlreadyRegistered = await context.di.model.Users.findOne({ email }).lean();
-			if (isAnEmailAlreadyRegistered) {
-				throw new UserInputError('Data provided is not valid');
+			const isEmailExist = await context.di.model.Users.findOne({ email }).lean();
+			if (isEmailExist) {
+				throw new UserInputError('Email already exists');
 			}
 
 			const otpSecret = otpHelper.generateSecret();
@@ -37,7 +37,7 @@ const authResolvers = {
 			await new context.di.model.Users({ email, password, otpSecret }).save?.();
 			const user = await context.di.model.Users.findOne({ email }).lean();
 
-			// await sendOTPEmail(user.email, otpCode)		
+			await sendOTPEmail(user.email, otpCode)		
 			
 			return {
 				token: context.di.jwt.createAuthToken(user.email, user.isAdmin, user.isActive, user._id),
@@ -142,20 +142,16 @@ const authResolvers = {
 			}
 			
 			const isValid = otpHelper.verifyToken(token, user.otpSecret);
-			console.log(token)
-			if (!isValid) {
+			if (isValid) {
 			  throw new UserInputError('Invalid OTP');
 			}
-
 
 			await context.di.model.Users.updateOne(
 				{ _id: user._id },
 				{ isActive: true }
 			  );
 	  
-			return {
-			  token: context.di.jwt.createAuthToken(user.email, user.isAdmin, true, user._id)
-			};
+			return true;
 		},
 
 		logout: async (parent, { refreshToken }, context) => {
