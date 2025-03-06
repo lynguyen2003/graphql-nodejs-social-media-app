@@ -11,13 +11,36 @@ export default /* GraphQL */ gql`
         likes: [User]
         saved: [User]
         viewCount: Int
+        type: String
+        mentions: [User]
+        privacy: String
+        audio: Audio
+        duration: Int
+        expiresAt: String
+        storyViews: [User]
 	}
+
+    type Audio {
+        name: String
+        artist: String
+        url: String
+    }
+
+    extend type Post {
+        likeCount: Int
+        saveCount: Int
+    }
 
     input AddPostInput {
         caption: String
-        tags: [String]
-        location: String
         mediaUrls: [String]!
+        type: String
+        location: String
+        tags: [String]
+        mentions: [String]
+        privacy: String
+        audio: AudioInput
+        duration: Int
     }
 
 	input EditPostInput {
@@ -26,7 +49,15 @@ export default /* GraphQL */ gql`
         tags: [String]
         location: String
         mediaUrls: String
+        audio: AudioInput
+        duration: Int
 	}
+
+    input AudioInput {
+        name: String
+        artist: String
+        url: String
+    }
 
 	type Query {
 		posts: [Post]

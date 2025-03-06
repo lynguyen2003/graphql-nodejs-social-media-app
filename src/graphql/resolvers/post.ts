@@ -1,4 +1,5 @@
 import { UserInputError } from "apollo-server-express"
+import { deleteMediaFromS3 } from '../../services/mediaService';
 import { getViewCount, incrementView } from "../../config/redisDb"
 type PostInput = {
 	id: String
@@ -6,6 +7,9 @@ type PostInput = {
 	tags: String[]
 	location: String
 	mediaUrls: String[]
+	type: String
+	mentions: String[]
+	privacy: String
 }
 
 export default {
@@ -21,13 +25,13 @@ export default {
         post: async (parent, { id } , context) => {
 			context.di.authValidation.ensureThatUserIsLogged(context);
 
-			const post = await context.di.model.Posts.findById(id);
-			if (!post) {
-				throw new UserInputError('Post not found');
-			}
 			await incrementView(id);
 			const result = await context.di.model.Posts.findById(id).populate('author').lean();
 			result.viewCount = await getViewCount(id);
+
+			if (!result) {
+				throw new UserInputError('Post not found');
+			}
 
 			return result;
 		}
@@ -44,9 +48,19 @@ export default {
 				throw new UserInputError('At least one media URL is required');
 			}
 
+			if (input.type === 'story' && !input.location) {
+				throw new UserInputError('Location is required for story posts');
+			}
+
+			const postType = input.type || 'post';
+			const expiresAt = postType === 'story' ? new Date(Date.now() + 24 * 60 * 60 * 1000) : null;
+
 			const post = await new context.di.model.Posts({
 				...input,
-				author: user._id
+				author: user._id,
+				mentions: input.mentions.map(mention => new context.di.model.Users({ _id: mention })),
+				type: postType,
+				expiresAt
 			}).save();
 
 			await context.di.model.Users.findByIdAndUpdate(
@@ -73,13 +87,32 @@ export default {
 			context.di.authValidation.ensureThatUserIsLogged(context);
 			const user = await context.di.authValidation.getUser(context);
 
+			const post = await context.di.model.Posts.findById(id);
+			
+			if (!post) {
+				throw new UserInputError('Post not found');
+			}
+			
+			if (post.author.toString() !== user._id.toString() && !user.isAdmin) {
+				throw new UserInputError('You do not have permission to delete this post');
+			}
+			
+			try {
+				for (const mediaUrl of post.mediaUrls) {
+					const s3Key = mediaUrl.replace(`https://${process.env.AWS_CLOUDFRONT_DOMAIN}/`, '');
+					await deleteMediaFromS3(s3Key);
+				}
+			} catch (error) {
+				console.error('Error deleting media files:', error);
+			}
+
 			await context.di.model.Users.findOneAndUpdate(
-				{ _id: user._id },
+				{ _id: post.author },
 				{ $pull: { posts: id } },
 				{ new: true }
 			).lean();
 
-			return context.di.model.Posts.findOneAndDelete({ _id: id });
+			return context.di.model.Posts.findByIdAndDelete(id);
 		},
 		toggleLikePost: async (parent, { id }, context) => {
 			context.di.authValidation.ensureThatUserIsLogged(context);
@@ -123,6 +156,9 @@ export default {
 			await post.save();
 			return post.populate('author saves');
 		}
-
+	},
+	Post: {
+		likeCount: async (parent) => { return parent.likes.length; },
+		saveCount: async (parent) => { return parent.saves.length; }
 	}
 };

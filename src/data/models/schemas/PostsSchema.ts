@@ -17,10 +17,24 @@ const PostsSchema = new Schema({
         type: String,
         trim: true
     }],
+    mentions: [{
+        type: Schema.Types.ObjectId,
+        ref: 'users'
+    }],
+    privacy: {
+        type: String,
+        enum: ['public', 'private', 'followers', 'friends'],
+        default: 'public'
+    },
     location: {
         type: String,
         trim: true,
         default: ''
+    },
+    type: {
+        type: String,
+        enum: ['post', 'reel', 'story'],
+        default: 'post'
     },
     mediaUrls: [{
         type: String,
@@ -38,12 +52,40 @@ const PostsSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'users'
     }],
+    audio: {
+        name: {
+            type: String,
+            default: ''
+        },
+        artist: {
+            type: String,
+            default: ''
+        },
+        url: {
+            type: String,
+            default: ''
+        }
+    },
+    duration: {
+        type: Number,
+        default: 0
+    },
+    expiresAt: {
+        type: Date,
+        default: null
+    },
+    storyViews: [{
+        type: Schema.Types.ObjectId,
+        ref: 'users'
+    }],
 }, {
     timestamps: true
 });
 
 // Indexes for better query performance
 PostsSchema.index({ userId: 1, createdAt: -1 });
+PostsSchema.index({ author: 1, createdAt: -1 });
 PostsSchema.index({ tags: 1 });
+PostsSchema.index({ type: 1 });
 
 export { PostsSchema };

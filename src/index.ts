@@ -18,6 +18,7 @@ import { setContext } from "./graphql/auth/setContext.js";
 import routesManager from "./routes/routesManager.js";
 import { connectRedis } from "./config/redisDb.js";
 import { setupViewCountSync } from "./helpers/viewCountSync.js";
+import { setupMediaCleanup } from "./helpers/mediaCleanup.js";
 
 dotenv.config()
 
@@ -43,6 +44,7 @@ const startServer = async () => {
 
 	await connectRedis();
 	setupViewCountSync();
+	setupMediaCleanup();
 	
 	server.applyMiddleware({ app });
 
