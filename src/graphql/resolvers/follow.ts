@@ -1,4 +1,5 @@
 import { UserInputError } from "apollo-server-express";
+import { createFollowNotification } from "../../services/notification/notificationService";
 
 export default {
   Query: {
@@ -61,13 +62,18 @@ export default {
       });
       
       if (existingFollow) {
-        return true; 
+        throw new UserInputError('You are already following this user');
       }
       
       await context.di.model.Followers.create({
         follower: user._id,
         following: userId
       });
+
+      await createFollowNotification(
+        userId,
+        user._id
+      );
       
       return true;
     },

@@ -1,6 +1,8 @@
 import { UserInputError } from "apollo-server-express"
 import { deleteMediaFromS3 } from '../../services/mediaService';
 import { getViewCount, incrementView } from "../../config/redisDb"
+import mongoose from "mongoose";
+import { createLikePostNotification } from "../../services/notification/notificationService";
 type PostInput = {
 	id: String
 	caption: String
@@ -127,11 +129,17 @@ export default {
 				throw new UserInputError('Post not found');
 			}
 			
-			const userIdStr = user._id.toString();
-			const userLikedIndex = post.likes.findIndex(id => id.toString() === userIdStr);
+			const userId = user._id.toString();
+			const userLikedIndex = post.likes.findIndex(id => id.toString() === userId);
 			
 			if (userLikedIndex === -1) {
 				post.likes.push(user._id);
+				
+				await createLikePostNotification(
+					id,
+					post.author,
+					user._id
+				);
 			} else {
 				post.likes.splice(userLikedIndex, 1);
 			}

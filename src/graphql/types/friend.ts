@@ -28,14 +28,14 @@ export default /* GraphQL */ gql`
     }
 
     type Query {
-        friends: [User]
+        friends: [Friend]
         friendRequests: [Friend]
         friendSuggestions(limit: Int): [FriendSuggestion]
         friendshipStatus(userId: String!): Friend
     }
 
     type Mutation {
-        addFriend(userId: String!): Friend
+        addFriend(userId: String!): Boolean
         acceptFriendRequest(requestId: String!): Friend
         rejectFriendRequest(requestId: String!): Friend
         unfriend(userId: String!): Boolean

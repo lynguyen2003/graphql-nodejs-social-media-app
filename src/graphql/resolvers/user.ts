@@ -50,7 +50,7 @@ export default {
 	  
 			const otp = otpHelper.generateToken(user.otpSecret);
 			await sendOTPViaSMS(phone, otp);
-			return true;
+			return userObj;
 		},
 		updateUser: async (parent, { input } : { input: UpdateUserInput } , context) => {
 			context.di.authValidation.ensureThatUserIsLogged(context);

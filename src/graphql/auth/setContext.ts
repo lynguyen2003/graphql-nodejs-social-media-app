@@ -1,4 +1,4 @@
-import { validateAuthToken, createAuthToken, createRefreshToken } from './jwt.js';
+import { validateAuthToken, createAuthToken, createRefreshToken, validateRefreshToken, revokeRefreshToken } from './jwt.js';
 import { environmentVariablesConfig } from '../../config/appConfig.js';
 import { authValidations } from '../auth/authValidations.js';
 import { ENVIRONMENT } from '../../config/environment.js';
@@ -13,6 +13,8 @@ interface Context {
         jwt: {
             createAuthToken: typeof createAuthToken;
             createRefreshToken: typeof createRefreshToken;
+            validateRefreshToken: typeof validateRefreshToken;
+            revokeRefreshToken: typeof revokeRefreshToken;
         };
     };
     user?: any;
@@ -33,6 +35,8 @@ export const setContext = async ({ req }: { req: Request }): Promise<Context> =>
             jwt: {
                 createAuthToken,
                 createRefreshToken,
+                validateRefreshToken,
+                revokeRefreshToken,
             },
         },
     };

@@ -1,4 +1,11 @@
 import { UserInputError } from "apollo-server-express";
+import mongoose from 'mongoose';
+import { 
+    createCommentPostNotification,
+    createReplyCommentNotification,
+    createMentionNotification,
+    EntityType
+} from '../../services/notification/notificationService.js';
 
 type CommentInput = {
     _id: string;
@@ -50,8 +57,9 @@ export default {
                 throw new UserInputError('Post not found');
             }
 
+            let parentComment = null;
             if (input.parentCommentId) {
-                const parentComment = await context.di.model.Comments.findById(input.parentCommentId);
+                parentComment = await context.di.model.Comments.findById(input.parentCommentId);
                 if (!parentComment) {
                     throw new UserInputError('Parent comment not found');
                 }
@@ -64,6 +72,46 @@ export default {
                 parentComment: input.parentCommentId || null,
                 mentions: mentions
             }).save();
+
+            await context.di.model.Posts.findByIdAndUpdate(
+                input.postId,
+                { $inc: { commentCount: 1 } }
+            );
+
+            if (!parentComment) {
+                if (post.author.toString() !== user._id.toString()) {
+                    await createCommentPostNotification(
+                        new mongoose.Types.ObjectId(input.postId),
+                        post.author,
+                        user._id,
+                        input.content
+                    );
+                }
+            } else {
+                if (parentComment.author.toString() !== user._id.toString()) {
+                    await createReplyCommentNotification(
+                        new mongoose.Types.ObjectId(parentComment._id),
+                        parentComment.author,
+                        user._id,
+                        input.content,
+                        new mongoose.Types.ObjectId(input.postId)
+                    );
+                }
+            }
+
+            if (mentions && mentions.length > 0) {
+                for (const mentionId of mentions) {
+                    if (mentionId.toString() !== user._id.toString()) {
+                        await createMentionNotification(
+                            new mongoose.Types.ObjectId(mentionId),
+                            user._id,
+                            comment._id,
+                            EntityType.COMMENT,
+                            input.content
+                        );
+                    }
+                }
+            }
 
             return await context.di.model.Comments.findById(comment._id)
                 .populate('author')

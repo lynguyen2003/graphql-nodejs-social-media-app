@@ -1,5 +1,6 @@
 import { UserInputError } from "apollo-server-express";
 import mongoose from "mongoose";
+import { createFriendAcceptNotification, createFriendRequestNotification } from "../../services/notification/notificationService";
 
 export default {
   Query: {
@@ -172,15 +173,20 @@ export default {
         }
       }
 
-      const friend = new context.di.model.Friends({
+      await new context.di.model.Friends({
         requester: user._id,
         recipient: userId,
         status: 'pending'
-      });
+      }).save();
 
-      await friend.save();
-      return friend.populate('requester recipient');
+      await createFriendRequestNotification(
+        userId,
+        user._id
+      );
+
+      return true;
     },
+
     acceptFriendRequest: async (parent, { requestId }, context) => {
       context.di.authValidation.ensureThatUserIsLogged(context);
       const user = await context.di.authValidation.getUser(context);
@@ -190,18 +196,15 @@ export default {
         throw new UserInputError('Friend request not found');
       }
 
-      if (friendship.recipient.toString() !== user._id.toString()) {
-        throw new UserInputError('You cannot accept this friend request');
-      }
-
-      if (friendship.status !== 'pending') {
-        throw new UserInputError('This friend request is not pending');
-      }
-
       friendship.status = 'accepted';
       await friendship.save();
+      await createFriendAcceptNotification(
+        friendship.requester,
+        user._id
+      );
       return friendship.populate('requester recipient');
     },
+    
     rejectFriendRequest: async (parent, { requestId }, context) => {
       context.di.authValidation.ensureThatUserIsLogged(context);
       const user = await context.di.authValidation.getUser(context);

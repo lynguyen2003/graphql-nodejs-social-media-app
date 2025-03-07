@@ -4,5 +4,6 @@ import { FriendsSchema } from './FriendsSchema.js';
 import { FollowersSchema } from './FollowsSchema.js';
 import { RefreshTokensSchema } from './RefreshTokensSchema.js';
 import { CommentsSchema } from './CommentsSchema.js';
+import { NotificationsSchema } from './NotificationsSchema.js';
 
-export { UsersSchema, PostsSchema, FriendsSchema, FollowersSchema, RefreshTokensSchema, CommentsSchema   };
+export { UsersSchema, PostsSchema, FriendsSchema, FollowersSchema, RefreshTokensSchema, CommentsSchema, NotificationsSchema };

@@ -81,27 +81,22 @@ const authResolvers = {
 		},
 
 		refreshToken: async (parent, { refreshToken }, context) => {
-			try {
-				const user = await context.di.jwt.validateRefreshToken(refreshToken);
-				
-				const newAccessToken = context.di.jwt.createAuthToken(
-					user.email, 
-					user.isAdmin, 
-					user.isActive, 
-					user._id
-				);
-				
-				const newRefreshToken = await context.di.jwt.createRefreshToken(user._id);
-				
-				await context.di.jwt.revokeRefreshToken(refreshToken);
-				
-				return {
-					accessToken: newAccessToken,
-					refreshToken: newRefreshToken
-				};
-			} catch (error) {
-				throw new UserInputError('Invalid refresh token');
-			}
+			const user = await context.di.jwt.validateRefreshToken(refreshToken);
+			const newAccessToken = context.di.jwt.createAuthToken(
+				user.email, 
+				user.isAdmin, 
+				user.isActive, 
+				user._id
+			);
+			
+			const newRefreshToken = await context.di.jwt.createRefreshToken(user._id);
+			
+			await context.di.jwt.revokeRefreshToken(refreshToken);
+			
+			return {
+				accessToken: newAccessToken,
+				refreshToken: newRefreshToken
+			};
 		},
 
 		sendOTPToEmail: async (parent, { email }, context) => {
