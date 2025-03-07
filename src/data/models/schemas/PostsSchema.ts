@@ -82,7 +82,6 @@ const PostsSchema = new Schema({
     timestamps: true
 });
 
-// Indexes for better query performance
 PostsSchema.index({ userId: 1, createdAt: -1 });
 PostsSchema.index({ author: 1, createdAt: -1 });
 PostsSchema.index({ tags: 1 });

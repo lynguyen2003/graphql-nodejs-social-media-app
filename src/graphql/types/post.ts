@@ -29,6 +29,8 @@ export default /* GraphQL */ gql`
     extend type Post {
         likeCount: Int
         saveCount: Int
+        commentCount: Int
+        comments: [Comment]
     }
 
     input AddPostInput {

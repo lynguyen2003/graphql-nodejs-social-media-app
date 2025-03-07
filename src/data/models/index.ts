@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-import { UsersSchema, PostsSchema, FriendsSchema, FollowersSchema, RefreshTokensSchema } from './schemas';
+import { UsersSchema, PostsSchema, FriendsSchema, FollowersSchema, RefreshTokensSchema, CommentsSchema } from './schemas';
 
 export const models = {
 	Users: mongoose.model('users', UsersSchema),
@@ -8,4 +8,5 @@ export const models = {
 	Friends: mongoose.model('friends', FriendsSchema),
 	Followers: mongoose.model('followers', FollowersSchema),
 	RefreshTokens: mongoose.model('refreshTokens', RefreshTokensSchema),
+	Comments: mongoose.model('comments', CommentsSchema),
 };

@@ -112,6 +112,10 @@ export default {
 				{ new: true }
 			).lean();
 
+			await context.di.model.Comments.deleteMany(
+                { post: id }
+            );
+
 			return context.di.model.Posts.findByIdAndDelete(id);
 		},
 		toggleLikePost: async (parent, { id }, context) => {
@@ -159,6 +163,22 @@ export default {
 	},
 	Post: {
 		likeCount: async (parent) => { return parent.likes.length; },
-		saveCount: async (parent) => { return parent.saves.length; }
+		saveCount: async (parent) => { return parent.saves.length; },
+        commentCount: async (parent, args, context) => {
+            return await context.di.model.Comments.countDocuments({
+                _id: parent._id
+            });
+        },
+		comments: async (parent, args, context) => {
+			return await context.di.model.Comments.find({ 
+				post: parent._id,
+				parentComment: null,
+			})
+			.sort({ createdAt: -1 })
+			.limit(5)
+			.populate('author')
+			.populate('mentions')
+			.lean();
+		}
 	}
 };
