@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon --watch ./src -e ts --exec tsx src/index.ts",
-    "build": "tsc",
+    "build": "tsc && npm run copy-static-assets",
+    "copy-static-assets": "if not exist dist\\public mkdir dist\\public && xcopy /E /I src\\public dist\\public",
     "start": "npm run build && node ./dist/index.js"
   },
   "keywords": [],

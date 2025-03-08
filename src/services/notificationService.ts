@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
-import { models } from '../../data/models/index.js';
-import { sendNotificationToUser } from '../websocket/websocketService.js';
+import { models } from '../data/models/index.js';
+import { sendNotificationToUser } from './websocketService.js';
 
 export enum NotificationType {
     LIKE_POST = 'like_post',

@@ -1,5 +1,5 @@
 import { UserInputError } from "apollo-server-express";
-import { createFollowNotification } from "../../services/notification/notificationService";
+import { createFollowNotification } from "../../services/notificationService.js";
 
 export default {
   Query: {

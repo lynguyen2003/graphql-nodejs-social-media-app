@@ -2,9 +2,9 @@ import { UserInputError } from 'apollo-server-express';
 import bcrypt from 'bcrypt';
 
 import { isValidEmail, isStrongPassword } from '../../helpers/validations.js';
-import { sendOTPEmail } from '../../services/email/emailService.js';
+import { sendOTPEmail } from '../../services/emailService.js';
 import { otpHelper } from '../../helpers/otpHelper.js';
-import { sendOTPViaSMS } from '../../services/sms/twilioService.js';
+import { sendOTPViaSMS } from '../../services/twilioService.js';
 
 interface AuthPayload {
 	token: string;

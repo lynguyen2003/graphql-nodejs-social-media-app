@@ -1,8 +1,7 @@
 import { UserInputError } from "apollo-server-express"
-import { deleteMediaFromS3 } from '../../services/mediaService';
-import { getViewCount, incrementView } from "../../config/redisDb"
-import mongoose from "mongoose";
-import { createLikePostNotification } from "../../services/notification/notificationService";
+import { deleteMediaFromS3 } from '../../services/mediaService.js';
+import { getViewCount, incrementView } from "../../config/redisDb.js"
+import { createLikePostNotification } from "../../services/notificationService.js";
 type PostInput = {
 	id: String
 	caption: String

@@ -1,5 +1,5 @@
 import twilio from 'twilio';
-import { environmentVariablesConfig } from '../../config/appConfig';
+import { environmentVariablesConfig } from '../config/appConfig.js';
 import { UserInputError } from 'apollo-server-express';
 
 const client = twilio(

@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import path from 'path';
 import fs from 'fs';
 import { promisify } from 'util';
-import { logger } from '../helpers/logger';
+import { logger } from '../helpers/logger.js';
 
 const unlinkAsync = promisify(fs.unlink);
 

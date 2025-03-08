@@ -1,4 +1,4 @@
-import { authenticator, totp } from 'otplib';
+import { authenticator } from 'otplib';
 
 authenticator.options = {
   step: 120, 

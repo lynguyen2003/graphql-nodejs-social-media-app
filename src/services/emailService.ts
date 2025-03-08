@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
-import { environmentVariablesConfig } from "../../config/appConfig";
-import { getListOfIPV4Address } from "../../helpers/getListOfIPV4Address";
+import { environmentVariablesConfig } from "../config/appConfig.js";
+import { getListOfIPV4Address } from "../helpers/getListOfIPV4Address.js";
 
 var transport = nodemailer.createTransport({
     host: environmentVariablesConfig.emailHost,

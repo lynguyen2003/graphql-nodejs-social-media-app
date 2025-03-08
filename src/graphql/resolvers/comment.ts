@@ -5,7 +5,7 @@ import {
     createReplyCommentNotification,
     createMentionNotification,
     EntityType
-} from '../../services/notification/notificationService.js';
+} from '../../services/notificationService.js';
 
 type CommentInput = {
     _id: string;

@@ -19,8 +19,7 @@ import { setContext } from "./graphql/auth/setContext.js";
 import routesManager from "./routes/routesManager.js";
 import { connectRedis } from "./config/redisDb.js";
 import { setupViewCountSync } from "./helpers/viewCountSync.js";
-import { setupMediaCleanup } from "./helpers/mediaCleanup.js";
-import { initializeWebSocketServer } from "./services/websocket/websocketService.js";
+import { initializeWebSocketServer } from "./services/websocketService.js";
 
 dotenv.config()
 
@@ -30,7 +29,6 @@ const httpServer = createServer(app);
 await connectDB();
 console.log('Connected to database');
 await connectRedis();
-console.log('Connected to Redis');
 setupViewCountSync();
 console.log('View count sync setup');
 //setupMediaCleanup();

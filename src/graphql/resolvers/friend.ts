@@ -1,6 +1,6 @@
 import { UserInputError } from "apollo-server-express";
 import mongoose from "mongoose";
-import { createFriendAcceptNotification, createFriendRequestNotification } from "../../services/notification/notificationService";
+import { createFriendAcceptNotification, createFriendRequestNotification } from "../../services/notificationService.js";
 
 export default {
   Query: {

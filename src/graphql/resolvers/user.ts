@@ -1,7 +1,7 @@
 import { UserInputError } from "apollo-server-express";
-import { otpHelper } from "../../helpers/otpHelper";
-import { formatPhoneNumber } from "../../helpers/validations";
-import { sendOTPViaSMS } from "../../services/sms/twilioService";
+import { otpHelper } from "../../helpers/otpHelper.js";
+import { formatPhoneNumber } from "../../helpers/validations.js";
+import { sendOTPViaSMS } from "../../services/twilioService.js";
 
 /**
  * All resolvers related to users

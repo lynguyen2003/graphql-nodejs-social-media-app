@@ -5,7 +5,7 @@ import {
     markAllNotificationsAsRead as markAllAsRead,
     deleteNotification as deleteNotif,
     deleteAllNotifications as deleteAllNotifs
-} from '../../services/notification/notificationService.js';
+} from '../../services/notificationService.js';
 
 export default {
     Query: {

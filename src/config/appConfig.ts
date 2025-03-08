@@ -13,7 +13,7 @@ export const environmentVariablesConfig = Object.freeze({
 	database: process.env.MONGO_DB,
 	mongoUser: process.env.MONGO_USER,
 	mongoPass: process.env.MONGO_PASS,
-	environment: (process.env.ENVIRONMENT === ENVIRONMENT.DEVELOPMENT) ? ENVIRONMENT.DEVELOPMENT : ENVIRONMENT.PRODUCTION,
+	environment: (process.env.c === ENVIRONMENT.DEVELOPMENT) ? ENVIRONMENT.DEVELOPMENT : ENVIRONMENT.PRODUCTION,
 	port: Number(process.env.PORT) || serverPortByDefault,
 	emailHost: process.env.EMAIL_HOST,
 	emailPort: Number(process.env.EMAIL_PORT),

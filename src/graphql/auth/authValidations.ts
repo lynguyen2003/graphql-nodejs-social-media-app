@@ -1,5 +1,5 @@
-import { AuthenticationError, ForbiddenError, ValidationError } from 'apollo-server-express';
-import { models } from '../../data/models';
+import { AuthenticationError, ForbiddenError } from 'apollo-server-express';
+import { models } from '../../data/models/index.js';
 
 /**
  * Auth validations repository

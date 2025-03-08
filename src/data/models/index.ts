@@ -8,7 +8,7 @@ import {
 	RefreshTokensSchema, 
 	CommentsSchema, 
 	NotificationsSchema 
-} from './schemas';
+} from './schemas/index.js';
 
 export const models = {
 	Users: mongoose.model('users', UsersSchema),

@@ -1,7 +1,7 @@
 import { Server as HttpServer } from 'http';
 import { Server as SocketIOServer } from 'socket.io';
 import jwt from 'jsonwebtoken';
-import { securityVariablesConfig } from '../../config/appConfig.js';
+import { securityVariablesConfig } from '../config/appConfig.js';
 
 let io: SocketIOServer;
 
