@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import mediaRouter from './mediaRoutes.js';
+import { getUnreadNotifications } from '../middleware/notificationMiddleware.js';
 
 const routesManager = Router();
 
@@ -9,5 +10,7 @@ routesManager.get('/', (req, res) => {
 });
 
 routesManager.use('/media', mediaRouter);
+
+routesManager.get('/notifications/unread', getUnreadNotifications);
 
 export default routesManager;
