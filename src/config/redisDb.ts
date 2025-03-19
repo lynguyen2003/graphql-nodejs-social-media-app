@@ -1,18 +1,31 @@
 import { createClient } from 'redis';
 import dotenv from 'dotenv';
+import { logger } from '../helpers/logger.js';
 
 dotenv.config();
 
+const redisUrl = process.env.REDIS_URL || `redis://${process.env.REDIS_HOST || 'localhost'}:${process.env.REDIS_PORT || 6379}`;
+
 const client = createClient({
-    url: process.env.REDIS_URL
+    url: redisUrl
 });
 
-client.on('error', (err) => console.log('Redis Client Error', err));
+client.on('error', (err) => {
+    logger.error('Redis Client Error', err);
+});
 
-const connectRedis = async () => {
-    await client.connect();
-    console.log('Connected to Redis');
+export const connectRedis = async () => {
+    try {
+        await client.connect();
+        logger.info('Connected to Redis');
+        return client;
+    } catch (error) {
+        logger.error('Failed to connect to Redis:', error);
+        return null;
+    }
 };
+
+export default client;
 
 const incrementView = async (postId) => {
     if (!postId) {
@@ -39,7 +52,6 @@ const removePostFromSyncList = async (postId) => {
 };
 
 export {
-    connectRedis,
     incrementView,
     getViewCount,
     getPostsToSync,

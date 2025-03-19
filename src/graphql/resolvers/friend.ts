@@ -187,6 +187,24 @@ export default {
       return true;
     },
 
+    cancelFriendRequest: async (parent, { userId }, context) => {
+      context.di.authValidation.ensureThatUserIsLogged(context);
+      const user = await context.di.authValidation.getUser(context);
+
+      const result = await context.di.model.Friends.updateOne({
+        requester: user._id,
+        recipient: userId,
+        status: 'pending'
+      }, {
+        $set: {
+          status: 'rejected'
+        }
+      });
+
+      return result.modifiedCount > 0;
+    },
+    
+
     acceptFriendRequest: async (parent, { requestId }, context) => {
       context.di.authValidation.ensureThatUserIsLogged(context);
       const user = await context.di.authValidation.getUser(context);
