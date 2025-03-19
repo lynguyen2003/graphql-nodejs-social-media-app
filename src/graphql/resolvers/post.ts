@@ -15,15 +15,34 @@ type PostInput = {
 
 export default {
 	Query: {
-		posts:  async (parent, args, context) => {
+		posts: async (parent, { cursor, limit }, context) => {
 			context.di.authValidation.ensureThatUserIsLogged(context);
-
-			context.di.authValidation.ensureThatUserIsAdministrator(context);
-
-			const sortCriteria = { isAdmin: 'desc', registrationDate: 'asc' };
-			return context.di.model.Posts.find().sort(sortCriteria).populate('author').lean();
+			
+			const query: any = {};
+			if (cursor) {
+				query._id = { $lt: cursor };
+			}
+			
+			const posts = await context.di.model.Posts.find(query)
+				.sort({ createdAt: -1 })
+				.limit(limit + 1)
+				.populate('author')
+				.lean();
+			
+			const hasNextPage = posts.length > limit;
+			const edges = hasNextPage ? posts.slice(0, limit) : posts;
+			
+			const endCursor = edges.length > 0 ? edges[edges.length - 1]._id : null;
+			
+			return {
+				edges: edges.map(post => ({ node: post })),
+				pageInfo: {
+					endCursor,
+					hasNextPage
+				}
+			};
 		},
-        post: async (parent, { id } , context) => {
+		post: async (parent, { id } , context) => {
 			context.di.authValidation.ensureThatUserIsLogged(context);
 
 			await incrementView(id);
@@ -33,6 +52,13 @@ export default {
 			if (!result) {
 				throw new UserInputError('Post not found');
 			}
+
+			return result;
+		},
+		likedPosts: async (parent, { userId } , context) => {
+			context.di.authValidation.ensureThatUserIsLogged(context);
+
+			const result = await context.di.model.Posts.find({ likes: userId }).populate('author').lean();
 
 			return result;
 		}

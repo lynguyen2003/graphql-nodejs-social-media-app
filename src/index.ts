@@ -59,16 +59,14 @@ const startServer = async () => {
 	const __dirname = path.dirname(fileURLToPath(import.meta.url));
 	app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 	app.use(bodyParser.json());
-	app.use('/', routesManager);
+	app.use('/graphql', routesManager);
 	
-	app.listen(environmentVariablesConfig.port, () => {
-			getListOfIPV4Address().forEach(ip => {
-				logger.info(`Application running on: http://${ip}:${environmentVariablesConfig.port}`);
-				if (environmentVariablesConfig.environment !== ENVIRONMENT.PRODUCTION) {
-					logger.info(`GraphQL Playground running on: http://${ip}:${environmentVariablesConfig.port}${server.graphqlPath}`);
-				}
-			});
-		});
+	httpServer.listen(4000, () => {
+        logger.info(`Application running on: http://localhost:4000`);
+        if (environmentVariablesConfig.environment !== ENVIRONMENT.PRODUCTION) {
+            logger.info(`GraphQL Playground running on: http://localhost:4000/graphql`);
+        }
+    });
 };
 
 await startServer();

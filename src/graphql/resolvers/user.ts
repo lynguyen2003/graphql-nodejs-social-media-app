@@ -17,14 +17,37 @@ type UpdateUserInput = {
 
 export default {
 	Query: {
-		users:  async (parent, args, context) => {
+		users: async (parent, { cursor, limit }, context) => {
 			context.di.authValidation.ensureThatUserIsLogged(context);
-
-			context.di.authValidation.ensureThatUserIsAdministrator(context);
-
-			const sortCriteria = { isAdmin: 'desc', registrationDate: 'asc' };
-			const users = context.di.model.Users.find().sort(sortCriteria).populate('posts').lean();
-			return users
+			
+			const query: any = {};
+			if (cursor) {
+				query._id = { $lt: cursor };
+			}
+			
+			const users = await context.di.model.Users.find(query)
+				.sort({ registrationDate: -1 })
+				.limit(limit + 1)
+				.populate('posts')
+				.lean();
+			
+			const hasNextPage = users.length > limit;
+			const edges = hasNextPage ? users.slice(0, limit) : users;
+			
+			const endCursor = edges.length > 0 ? edges[edges.length - 1]._id : null;
+			
+			return {
+				edges: edges.map(user => ({ node: user })),
+				pageInfo: {
+					endCursor,
+					hasNextPage
+				}
+			};
+		},
+		user: async (parent, { id }, context) => {
+			context.di.authValidation.ensureThatUserIsLogged(context);
+			const user = await context.di.model.Users.findById(id).populate('posts').lean();
+			return user;
 		}
 	},
 	Mutation: {

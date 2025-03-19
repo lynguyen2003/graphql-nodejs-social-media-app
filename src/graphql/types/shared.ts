@@ -5,6 +5,11 @@ export default /* GraphQL */ gql`
 		deletedCount: Int!
 	}
 
+	type PageInfo {
+        endCursor: String
+        hasNextPage: Boolean!
+    }
+
 	input PaginationInput {
 		page: Int = 1
 		limit: Int = 10

@@ -18,6 +18,15 @@ export default /* GraphQL */ gql`
 		lastLogin: String
 	}
 
+	type UserEdge {
+        node: User!
+    }
+
+    type UserConnection {
+        edges: [UserEdge!]!
+        pageInfo: PageInfo!
+    }
+
 	input UpdateUserInput {
 		email: String
 		username: String
@@ -29,7 +38,7 @@ export default /* GraphQL */ gql`
 	}
 
 	type Query {
-		users: [User]
+		users(cursor: String, limit: Int): UserConnection!
 		user(id: String!): User
 	}
 	type Mutation {

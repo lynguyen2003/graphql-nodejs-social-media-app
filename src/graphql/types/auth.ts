@@ -16,7 +16,7 @@ export default /* GraphQL */ gql`
     }
 
     type Mutation {
-        registerUser(email: String!, password: String!): AuthTokens
+        registerUser(email: String!, password: String!): Token
         authUser(email: String!, password: String!): AuthTokens
         refreshToken(refreshToken: String!): AuthTokens
         logout(refreshToken: String!): Boolean

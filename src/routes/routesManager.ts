@@ -4,7 +4,7 @@ import { getUnreadNotifications } from '../middleware/notificationMiddleware.js'
 
 const routesManager = Router();
 
-routesManager.get('/', (req, res) => {
+routesManager.get('/graphql', (req, res) => {
 	const status = 200;
 	res.status(status).end();
 });

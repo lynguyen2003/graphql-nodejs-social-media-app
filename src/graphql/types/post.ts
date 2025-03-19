@@ -18,7 +18,16 @@ export default /* GraphQL */ gql`
         duration: Int
         expiresAt: String
         storyViews: [User]
-	}
+	} 
+
+    type PostEdge {
+        node: Post!
+    }
+
+    type PostConnection {
+        edges: [PostEdge!]! 
+        pageInfo: PageInfo!
+    }
 
     type Audio {
         name: String
@@ -62,8 +71,9 @@ export default /* GraphQL */ gql`
     }
 
 	type Query {
-		posts: [Post]
+		posts(cursor: String, limit: Int): PostConnection!
         post(id: String!): Post
+        likedPosts(userId: String!): [Post]
 	}
     type Mutation {
         addPost(input: AddPostInput!): Post!
