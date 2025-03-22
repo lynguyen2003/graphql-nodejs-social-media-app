@@ -19,10 +19,14 @@ export default {
 	Query: {
 		users: async (parent, { cursor, limit }, context) => {
 			context.di.authValidation.ensureThatUserIsLogged(context);
+			const currentUser = await context.di.authValidation.getUser(context);
 			
-			const query: any = {};
+			const query: any = {
+				_id: { $ne: currentUser._id }
+			};
+			
 			if (cursor) {
-				query._id = { $lt: cursor };
+				query._id = { ...query._id, $lt: cursor };
 			}
 			
 			const users = await context.di.model.Users.find(query)

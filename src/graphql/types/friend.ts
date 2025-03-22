@@ -35,11 +35,11 @@ export default /* GraphQL */ gql`
     }
 
     type Mutation {
-        addFriend(userId: String!): Boolean
-        cancelFriendRequest(userId: String!): Boolean
+        addFriend(userId: String!): Friend
+        cancelFriendRequest(requestId: String!): Friend
         acceptFriendRequest(requestId: String!): Friend
         rejectFriendRequest(requestId: String!): Friend
-        unfriend(userId: String!): Boolean
+        unfriend(userId: String!): String
         blockUser(userId: String!): Friend
         unblockUser(userId: String!): Boolean
   }

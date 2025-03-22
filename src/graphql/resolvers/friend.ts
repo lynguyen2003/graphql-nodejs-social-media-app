@@ -184,26 +184,28 @@ export default {
         user._id
       );
 
-      return true;
+      return await context.di.model.Friends.findOne({
+        requester: user._id,
+        recipient: userId
+      }).populate('requester recipient');
     },
-
-    cancelFriendRequest: async (parent, { userId }, context) => {
+    cancelFriendRequest: async (parent, { requestId }, context) => {
       context.di.authValidation.ensureThatUserIsLogged(context);
       const user = await context.di.authValidation.getUser(context);
 
-      const result = await context.di.model.Friends.updateOne({
-        requester: user._id,
-        recipient: userId,
-        status: 'pending'
-      }, {
-        $set: {
-          status: 'rejected'
-        }
-      });
+      const friendship = await context.di.model.Friends.findById(requestId);
+      if (!friendship) {
+        throw new UserInputError('Friend request not found');
+      }
 
-      return result.modifiedCount > 0;
+      if (friendship.requester.toString() !== user._id.toString()) {
+        throw new UserInputError('You cannot cancel this friend request');
+      }
+
+      friendship.status = 'rejected';
+      await friendship.save();
+      return friendship.populate('requester recipient');
     },
-    
 
     acceptFriendRequest: async (parent, { requestId }, context) => {
       context.di.authValidation.ensureThatUserIsLogged(context);
@@ -255,7 +257,11 @@ export default {
         ]
       });
 
-      return result;
+      if (result.deletedCount === 0) {
+        throw new UserInputError('Friendship not found');
+      }
+
+      return userId;
     },
     blockUser: async (parent, { userId }, context) => {
       context.di.authValidation.ensureThatUserIsLogged(context);

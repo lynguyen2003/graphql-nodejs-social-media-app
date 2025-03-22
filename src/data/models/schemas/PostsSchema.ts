@@ -15,11 +15,13 @@ const PostsSchema = new Schema({
     },
     tags: [{
         type: String,
-        trim: true
+        trim: true,
+        default: []
     }],
     mentions: [{
         type: Schema.Types.ObjectId,
-        ref: 'users'
+        ref: 'users',
+        default: []
     }],
     privacy: {
         type: String,
@@ -46,11 +48,13 @@ const PostsSchema = new Schema({
     },
     likes: [{
         type: Schema.Types.ObjectId,
-        ref: 'users'
+        ref: 'users',
+        default: []
     }],
     saves: [{
         type: Schema.Types.ObjectId,
-        ref: 'users'
+        ref: 'users',
+        default: []
     }],
     audio: {
         name: {

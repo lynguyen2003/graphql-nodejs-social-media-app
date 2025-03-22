@@ -9,7 +9,7 @@ export default /* GraphQL */ gql`
         location: String
         mediaUrls: [String]
         likes: [User]
-        saved: [User]
+        saves: [User]
         viewCount: Int
         type: String
         mentions: [User]
@@ -18,6 +18,8 @@ export default /* GraphQL */ gql`
         duration: Int
         expiresAt: String
         storyViews: [User]
+        createdAt: String
+        updatedAt: String
 	} 
 
     type PostEdge {
