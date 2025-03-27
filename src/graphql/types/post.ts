@@ -75,6 +75,7 @@ export default /* GraphQL */ gql`
 	type Query {
 		posts(cursor: String, limit: Int): PostConnection!
         post(id: String!): Post
+        relatedPosts(id: String!): [Post]
         likedPosts(userId: String!): [Post]
 	}
     type Mutation {

@@ -68,6 +68,8 @@ export const validateFileTypeByPostType = (req, res, next) => {
             break;
             
         case 'post':
+            break;
+            
         case 'story':
             // Both images and videos are accepted
             break;

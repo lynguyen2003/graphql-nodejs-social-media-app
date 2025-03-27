@@ -5,17 +5,19 @@ import dotenv from "dotenv"
 import { createServer } from "http";
 import { ApolloServer } from 'apollo-server-express';
 
-import { logger } from "./helpers/logger.js";
+import { setContext } from "./graphql/auth/setContext.js";
 import connectDB from "./config/database.js"
 import { connectRedis } from "./config/redisDb.js";
+import { logger } from "./helpers/logger.js";
 import { resolvers } from "./graphql/resolvers/index.js";
 import { environmentVariablesConfig } from "./config/appConfig.js";
 import { initTypeDefinition } from "./graphql/types/index.js";
-import { setContext } from "./graphql/auth/setContext.js";
-import routesManager from "./routes/routesManager.js";
 import { setupViewCountSync } from "./helpers/viewCountSync.js";
 import { initializeWebSocketServer } from "./services/websocketService.js";
+
+import routesManager from "./routes/routesManager.js";
 import healthRouter from "./routes/healthRoutes.js";
+import mediaRouter from "./routes/mediaRoutes.js";
 
 dotenv.config();
 
@@ -46,10 +48,8 @@ const startServer = async () => {
     server.applyMiddleware({ app });
     
     app.use('/health', healthRouter);
-    
-    app.use((req, res) => {
-      res.status(404).json({ error: 'Route not found' });
-    });
+    app.use('/media', mediaRouter);
+    app.use('/routes', routesManager);
     
     app.use((err, req, res, next) => {
       logger.error(err.stack);

@@ -2,7 +2,6 @@ import { Router } from 'express';
 import { upload, validateFileTypeByPostType } from '../middleware/uploadMiddleware.js';
 import { processMediaByPostType, generatePresignedUploadUrl } from '../services/mediaService.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
-import { models } from '../data/models/index.js';
 
 const mediaRouter = Router();
 

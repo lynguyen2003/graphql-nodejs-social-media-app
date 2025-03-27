@@ -55,6 +55,13 @@ export default {
 
 			return result;
 		},
+		relatedPosts: async (parent, { id } , context) => {
+			context.di.authValidation.ensureThatUserIsLogged(context);
+
+			const result = await context.di.model.Posts.find({ tags: { $in: parent.tags }, author: { $ne: parent.author } }).populate('author').lean();
+
+			return result;
+		},
 		likedPosts: async (parent, { userId } , context) => {
 			context.di.authValidation.ensureThatUserIsLogged(context);
 
@@ -199,7 +206,7 @@ export default {
 		saveCount: async (parent) => { return parent.saves.length; },
         commentCount: async (parent, args, context) => {
             return await context.di.model.Comments.countDocuments({
-                _id: parent._id
+                post: parent._id
             });
         },
 		comments: async (parent, args, context) => {
