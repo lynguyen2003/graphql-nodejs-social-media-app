@@ -81,7 +81,7 @@ export default /* GraphQL */ gql`
     type Mutation {
         addPost(input: AddPostInput!): Post!
         editPost(input: EditPostInput!): Post!
-        deletePost(id: String!): Post
+        deletePost(id: String!): Boolean
         toggleLikePost(id: String!): Post!
         toggleSavePost(id: String!): Post!
     }

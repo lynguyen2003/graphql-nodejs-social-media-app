@@ -1,6 +1,6 @@
 import cron from 'node-cron';
 import { models } from '../data/models';
-import { deleteMediaFromS3 } from '../services/mediaService';
+import { deleteMediaFromS3 } from '../services/s3Services';
 import { logger } from './logger';
 
 export const setupMediaCleanup = () => {

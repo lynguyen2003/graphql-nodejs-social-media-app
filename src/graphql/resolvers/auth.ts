@@ -164,6 +164,38 @@ const authResolvers = {
 			
 			return context.di.model.Users.deleteOne({ _id: user._id });
 		},
+
+		resetPassword: async (parent, { email, token, newPassword }, context) => {
+			if (!email || !token || !newPassword) {
+				throw new UserInputError('Missing required fields');
+			}
+			
+			const user = await context.di.model.Users.findOne({ email }).lean();
+			if (!user) {
+				throw new UserInputError('User not found');
+			}
+			
+			const isValid = otpHelper.verifyToken(token, user.otpSecret);
+			if (!isValid) {
+				throw new UserInputError('Invalid or expired token');
+			}
+			
+			if (!isStrongPassword(newPassword)) {
+				throw new UserInputError('The password is not secure enough');
+			}
+			
+			// Hash the new password
+			const salt = await bcrypt.genSalt(10);
+			const hashedPassword = await bcrypt.hash(newPassword, salt);
+			
+			await context.di.model.Users.findOneAndUpdate(
+				{ email },
+				{ password: hashedPassword },
+				{ new: true }
+			).lean();
+			
+			return true;
+		},
 	},
 };
 

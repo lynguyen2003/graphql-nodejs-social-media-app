@@ -1,7 +1,9 @@
-import { UserInputError } from "apollo-server-express"
-import { deleteMediaFromS3 } from '../../services/mediaService.js';
+import { ApolloError, UserInputError } from "apollo-server-express"
+import { deleteMediaFromS3, presignedUrl } from '../../services/s3Services.js';
 import { getViewCount, incrementView } from "../../config/redisDb.js"
 import { createLikePostNotification } from "../../services/notificationService.js";
+import { logger } from "../../helpers/logger.js";
+
 type PostInput = {
 	id: String
 	caption: String
@@ -68,7 +70,7 @@ export default {
 			const result = await context.di.model.Posts.find({ likes: userId }).populate('author').lean();
 
 			return result;
-		}
+		},
 	},
 	Mutation: {
 		addPost: async (parent, { input } : { input: PostInput }, context) => {
@@ -130,15 +132,6 @@ export default {
 			if (post.author.toString() !== user._id.toString() && !user.isAdmin) {
 				throw new UserInputError('You do not have permission to delete this post');
 			}
-			
-			try {
-				for (const mediaUrl of post.mediaUrls) {
-					const s3Key = mediaUrl.replace(`https://${process.env.AWS_CLOUDFRONT_DOMAIN}/`, '');
-					await deleteMediaFromS3(s3Key);
-				}
-			} catch (error) {
-				console.error('Error deleting media files:', error);
-			}
 
 			await context.di.model.Users.findOneAndUpdate(
 				{ _id: post.author },
@@ -150,7 +143,8 @@ export default {
                 { post: id }
             );
 
-			return context.di.model.Posts.findByIdAndDelete(id);
+			await context.di.model.Posts.findByIdAndDelete(id);
+			return true;
 		},
 		toggleLikePost: async (parent, { id }, context) => {
 			context.di.authValidation.ensureThatUserIsLogged(context);

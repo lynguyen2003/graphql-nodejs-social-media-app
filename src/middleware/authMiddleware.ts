@@ -1,5 +1,8 @@
 import jwt from 'jsonwebtoken';
 import { models } from '../data/models/index.js';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 export const authMiddleware = async (req, res, next) => {
     try {
@@ -18,11 +21,11 @@ export const authMiddleware = async (req, res, next) => {
         try {
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
             
-            if (!decoded || !decoded.userId) {
+            if (!decoded || !decoded._id) {  
                 return res.status(401).json({ error: 'Invalid token' });
             }
             
-            const user = await models.Users.findById(decoded.userId).lean();
+            const user = await models.Users.findById(decoded._id).lean();
             
             if (!user) {
                 return res.status(401).json({ error: 'User not found' });

@@ -17,7 +17,6 @@ import { initializeWebSocketServer } from "./services/websocketService.js";
 
 import routesManager from "./routes/routesManager.js";
 import healthRouter from "./routes/healthRoutes.js";
-import mediaRouter from "./routes/mediaRoutes.js";
 
 dotenv.config();
 
@@ -48,8 +47,7 @@ const startServer = async () => {
     server.applyMiddleware({ app });
     
     app.use('/health', healthRouter);
-    app.use('/media', mediaRouter);
-    app.use('/routes', routesManager);
+    app.use('/', routesManager);
     
     app.use((err, req, res, next) => {
       logger.error(err.stack);
