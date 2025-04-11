@@ -4,7 +4,6 @@ import bcrypt from 'bcrypt';
 import { isValidEmail, isStrongPassword } from '../../helpers/validations.js';
 import { sendOTPEmail } from '../../services/emailService.js';
 import { otpHelper } from '../../helpers/otpHelper.js';
-import { sendOTPViaSMS } from '../../services/twilioService.js';
 
 interface AuthPayload {
 	token: string;
@@ -111,23 +110,6 @@ const authResolvers = {
 				throw new Error(`Failed to send OTP: ${error.message}`);
 			} 
 			return 'OTP sent successfully';
-		},
-
-		sendOTPToSMS: async (parent, { phone }, context) => {
-			if (!phone || !/^\+[1-9]\d{1,14}$/.test(phone)) {
-				throw new UserInputError('Invalid phone number.');
-			}
-			const user = await context.di.model.Users.findOne({ phone }).lean();
-			if (!user) {
-				throw new UserInputError('User not found');
-			}
-			const otp = otpHelper.generateToken(user.otpSecret);
-			try {
-				await sendOTPViaSMS(phone, otp);
-				return 'OTP sent successfully';
-			} catch (error) {
-				throw new Error(`Failed to send OTP: ${error.message}`);
-			}
 		},
 
 		verifyOTP: async (parent, { email, token }, context) => {

@@ -17,7 +17,6 @@ client.on('error', (err) => {
 export const connectRedis = async () => {
     try {
         await client.connect();
-        logger.info('Connected to Redis');
         return client;
     } catch (error) {
         logger.error('Failed to connect to Redis:', error);

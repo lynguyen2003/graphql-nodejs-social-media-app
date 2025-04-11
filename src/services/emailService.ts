@@ -5,7 +5,7 @@ import { getListOfIPV4Address } from "../helpers/getListOfIPV4Address.js";
 var transport = nodemailer.createTransport({
     host: environmentVariablesConfig.emailHost,
     port: environmentVariablesConfig.emailPort,
-    secure: true, // Use SSL/TLS
+    secure: true,
     auth: {
       user: environmentVariablesConfig.emailUser,
       pass: environmentVariablesConfig.emailPassword
@@ -13,7 +13,7 @@ var transport = nodemailer.createTransport({
 });
 
 export const sendVerificationEmail = async (email: string, token: string) => {
-  const ip = getListOfIPV4Address()[0]; // Lấy địa chỉ IP đầu tiên
+  const ip = getListOfIPV4Address()[0]; 
   const verificationUrl = `http://${ip}:${environmentVariablesConfig.port}/verify-email/${token}`;
   
   await transport.sendMail({

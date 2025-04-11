@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { getUnreadNotifications } from '../middleware/notificationMiddleware.js';
-import { presignedUrl } from '../services/s3Services.js';
+import uploadRouter from './uploadRoutes.js';
 
 const routesManager = Router();
 
@@ -9,19 +9,12 @@ routesManager.get('/graphql', (req, res) => {
 	res.status(status).end();
 });
 
-routesManager.get('/presigned-url', async (req, res) => {
-	try {
-		const { postType, fileName, fileType } = req.body;
-		console.log(req);
-
-		const data = await presignedUrl(postType as string, fileName as string, fileType as string);
-
-		res.status(200).json(data);
-	} catch (error: any) {
-		res.status(400).json({ message: error.message });
-	}
+routesManager.get('/health', (req, res) => {
+	res.status(200).json({ status: 'ok' });
 });
 
 routesManager.get('/notifications/unread', getUnreadNotifications);
+
+routesManager.use('/api', uploadRouter);
 
 export default routesManager;

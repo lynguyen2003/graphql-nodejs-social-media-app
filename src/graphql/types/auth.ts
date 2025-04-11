@@ -23,7 +23,6 @@ export default /* GraphQL */ gql`
         deleteMyUserAccount: DeleteResult
         verifyOTP(email: String!, token: String!): Token!
         sendOTPToEmail(email: String!): String
-        sendOTPToSMS(phone: String!): String
         resetPassword(email: String!, token: String!, newPassword: String!): Boolean
     }
 `;

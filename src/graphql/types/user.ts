@@ -43,6 +43,5 @@ export default /* GraphQL */ gql`
 	}
 	type Mutation {
 		updateUser(input: UpdateUserInput!): User!
-		addPhoneNumber(phone: String!): User!
 	}
 `;

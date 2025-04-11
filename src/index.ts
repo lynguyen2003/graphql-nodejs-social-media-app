@@ -16,7 +16,6 @@ import { setupViewCountSync } from "./helpers/viewCountSync.js";
 import { initializeWebSocketServer } from "./services/websocketService.js";
 
 import routesManager from "./routes/routesManager.js";
-import healthRouter from "./routes/healthRoutes.js";
 
 dotenv.config();
 
@@ -29,11 +28,7 @@ const startServer = async () => {
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
     
-    logger.info('Connecting to MongoDB...');
     await connectDB();
-    logger.info('Connected to MongoDB');
-    
-    logger.info('Connecting to Redis...');
     await connectRedis();
     
     const typeDefs = await initTypeDefinition();
@@ -46,7 +41,6 @@ const startServer = async () => {
     await server.start();
     server.applyMiddleware({ app });
     
-    app.use('/health', healthRouter);
     app.use('/', routesManager);
     
     app.use((err, req, res, next) => {
@@ -56,7 +50,6 @@ const startServer = async () => {
     
     const PORT = environmentVariablesConfig.port || 4000;
     httpServer.listen(PORT, () => {
-      logger.info(`Server running on port ${PORT}`);
       logger.info(`GraphQL endpoint: http://localhost:${PORT}${server.graphqlPath}`);
     });
     
