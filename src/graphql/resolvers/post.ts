@@ -70,6 +70,24 @@ export default {
 
 			return result;
 		},
+		searchPosts: async (parent, { searchQuery }, context) => {
+			context.di.authValidation.ensureThatUserIsLogged(context);
+			
+			// Search in captions, tags and locations
+			const result = await context.di.model.Posts.find({
+				$or: [
+					{ caption: { $regex: searchQuery, $options: 'i' } },
+					{ tags: { $in: [new RegExp(searchQuery, 'i')] } },
+					{ location: { $regex: searchQuery, $options: 'i' } }
+				]
+			})
+			.sort({ createdAt: -1 })
+			.populate('author')
+			.populate('mentions')
+			.lean();
+			
+			return result;
+		},
 	},
 	Mutation: {
 		addPost: async (parent, { input } : { input: PostInput }, context) => {

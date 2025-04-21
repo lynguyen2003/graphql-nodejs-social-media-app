@@ -77,6 +77,7 @@ export default /* GraphQL */ gql`
         post(id: String!): Post
         relatedPosts(id: String!): [Post]
         likedPosts(userId: String!): [Post]
+        searchPosts(searchQuery: String!): [Post]
 	}
     type Mutation {
         addPost(input: AddPostInput!): Post!
