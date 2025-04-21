@@ -40,6 +40,7 @@ export default /* GraphQL */ gql`
 	type Query {
 		users(cursor: String, limit: Int): UserConnection!
 		user(id: String!): User
+		searchUsers(query: String!): [User!]!
 	}
 	type Mutation {
 		updateUser(input: UpdateUserInput!): User!

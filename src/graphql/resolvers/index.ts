@@ -7,6 +7,7 @@ import friend from './friend.js';
 import follow from './follow.js';
 import comment from './comment.js';
 import notification from './notification.js';
+import chat from './chat.js';
 
 export const resolvers = merge(
 	user,
@@ -15,5 +16,6 @@ export const resolvers = merge(
 	friend,
 	follow,
 	comment,
-	notification
+	notification,
+	chat
 );

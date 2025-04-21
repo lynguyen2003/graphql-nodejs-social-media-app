@@ -49,7 +49,16 @@ export default {
 			context.di.authValidation.ensureThatUserIsLogged(context);
 			const user = await context.di.model.Users.findById(id).populate('posts').lean();
 			return user;
+		},
+		searchUsers: async (parent, { query }, context) => {
+			const currentUser = await context.di.authValidation.getUser(context);
+			const users = await context.di.model.Users.find({
+				username: { $regex: query, $options: 'i' },
+				_id: { $ne: currentUser._id }
+			}).lean();	
+			return users;
 		}
+
 	},
 	Mutation: {
 		updateUser: async (parent, { input } : { input: UpdateUserInput } , context) => {

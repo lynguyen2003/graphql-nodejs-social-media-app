@@ -7,7 +7,9 @@ import {
 	FollowersSchema, 
 	RefreshTokensSchema, 
 	CommentsSchema, 
-	NotificationsSchema 
+	NotificationsSchema,
+	MessageSchema,
+	ConversationSchema
 } from './schemas/index.js';
 
 export const models = {
@@ -18,4 +20,6 @@ export const models = {
 	RefreshTokens: mongoose.model('refreshTokens', RefreshTokensSchema),
 	Comments: mongoose.model('comments', CommentsSchema),
 	Notifications: mongoose.model('notifications', NotificationsSchema),
+	Messages: mongoose.model('messages', MessageSchema),
+	Conversations: mongoose.model('conversations', ConversationSchema)
 };
