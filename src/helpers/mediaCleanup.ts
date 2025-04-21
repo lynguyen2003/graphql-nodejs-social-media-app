@@ -1,6 +1,5 @@
 import cron from 'node-cron';
 import { models } from '../data/models';
-import { deleteMediaFromS3 } from '../services/s3Services';
 import { logger } from './logger';
 
 export const setupMediaCleanup = () => {
@@ -15,15 +14,9 @@ export const setupMediaCleanup = () => {
             
             logger.info(`Found ${expiredStories.length} expired stories to clean up`);
             
-            // Delete media from S3 and posts from database
+            // Delete posts from database
             for (const story of expiredStories) {
                 try {
-                    // Delete media from S3
-                    for (const mediaUrl of story.mediaUrls) {
-                        const s3Key = mediaUrl.replace(`https://${process.env.AWS_CLOUDFRONT_DOMAIN}/`, '');
-                        await deleteMediaFromS3(s3Key);
-                    }
-                    
                     // Delete post from database
                     await models.Posts.findByIdAndDelete(story._id);
                     

@@ -40,7 +40,8 @@ const PostsSchema = new Schema({
     },
     mediaUrls: [{
         type: String,
-        required: true
+        required: true,
+        default: []
     }],
     viewCount: {
         type: Number,

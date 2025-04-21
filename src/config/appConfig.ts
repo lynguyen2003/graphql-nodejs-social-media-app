@@ -23,11 +23,6 @@ export const environmentVariablesConfig = Object.freeze({
 	twilioAccountSid: process.env.TWILIO_ACCOUNT_SID,
 	twilioAuthToken: process.env.TWILIO_AUTH_TOKEN,
 	twilioPhoneNumber: process.env.TWILIO_PHONE_NUMBER,
-	awsAccessKeyId: process.env.AWS_ACCESS_KEY_ID,
-	awsSecretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-	awsRegion: process.env.AWS_REGION,
-	awsS3Bucket: process.env.AWS_S3_BUCKET,
-	awsCloudfrontDomain: process.env.AWS_CLOUDFRONT_DOMAIN
 });
 
 

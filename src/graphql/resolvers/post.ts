@@ -1,8 +1,6 @@
-import { ApolloError, UserInputError } from "apollo-server-express"
-import { deleteMediaFromS3, presignedUrl } from '../../services/s3Services.js';
+import { UserInputError } from "apollo-server-express"
 import { getViewCount, incrementView } from "../../config/redisDb.js"
 import { createLikePostNotification } from "../../services/notificationService.js";
-import { logger } from "../../helpers/logger.js";
 
 type PostInput = {
 	id: String
@@ -29,6 +27,7 @@ export default {
 				.sort({ createdAt: -1 })
 				.limit(limit + 1)
 				.populate('author')
+				.populate('mentions')
 				.lean();
 			
 			const hasNextPage = posts.length > limit;
@@ -48,7 +47,7 @@ export default {
 			context.di.authValidation.ensureThatUserIsLogged(context);
 
 			await incrementView(id);
-			const result = await context.di.model.Posts.findById(id).populate('author').lean();
+			const result = await context.di.model.Posts.findById(id).populate('author').populate('mentions').lean();
 			result.viewCount = await getViewCount(id);
 
 			if (!result) {

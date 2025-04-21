@@ -165,14 +165,11 @@ export default {
                 throw new UserInputError('You do not have permission to delete this comment');
             }
 
-            const deletedComment = await context.di.model.Comments.findByIdAndUpdate(
-                id,
-                { $set: { status: 'deleted' } },
-                { new: true }
-            )
-            .populate('author')
-            .populate('mentions')
-            .lean();
+            await context.di.model.Comments.deleteMany({ parentComment: id });
+
+            const deletedComment = await context.di.model.Comments.findByIdAndDelete(
+                id
+            );
 
             return deletedComment;
         },

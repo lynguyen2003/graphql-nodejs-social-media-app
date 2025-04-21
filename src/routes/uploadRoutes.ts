@@ -7,7 +7,7 @@ const uploadRouter = Router();
 const cloudinaryService = new CloudinaryService();
 
 // Route for uploading single file
-uploadRouter.post('/upload', upload.single('file'), handleFileUpload, (req, res) => {
+uploadRouter.post('/upload', authMiddleware, upload.single('file'), handleFileUpload, (req, res) => {
   res.status(200).json({
     success: true,
     mediaUrl: req.body.mediaUrl,
@@ -16,7 +16,7 @@ uploadRouter.post('/upload', upload.single('file'), handleFileUpload, (req, res)
 });
 
 // Route for uploading multiple files (max 10)
-uploadRouter.post('/upload-multiple', upload.array('files', 10), handleMultipleFileUpload, (req, res) => {
+uploadRouter.post('/upload-multiple', authMiddleware, upload.array('files', 10), handleMultipleFileUpload, (req, res) => {
   res.status(200).json({
     success: true,
     files: req.body.uploadedFiles
